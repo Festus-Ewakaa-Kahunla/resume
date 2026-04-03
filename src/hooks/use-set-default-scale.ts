@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { A4_HEIGHT_PX, LETTER_HEIGHT_PX } from "@/lib/constants";
 
-const HEADER_HEIGHT_PX = 56;
 const CONTROL_BAR_HEIGHT_PX = 48;
-const VERTICAL_PADDING_PX = 32;
+const OUTER_PADDING_PX = 24; // p-3 top + bottom on builder container
+const SECTION_PADDING_PX = 32; // p-4 top + bottom on preview section
 
 export function useSetDefaultScale({
   setScale,
@@ -20,7 +20,7 @@ export function useSetDefaultScale({
     function getDefaultScale() {
       const screenHeight = window.innerHeight;
       const availableHeight =
-        screenHeight - HEADER_HEIGHT_PX - CONTROL_BAR_HEIGHT_PX - VERTICAL_PADDING_PX;
+        screenHeight - CONTROL_BAR_HEIGHT_PX - OUTER_PADDING_PX - SECTION_PADDING_PX;
       const documentHeight =
         documentSize === "A4" ? A4_HEIGHT_PX : LETTER_HEIGHT_PX;
       return Math.round((availableHeight / documentHeight) * 100) / 100;

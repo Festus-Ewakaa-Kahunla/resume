@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ResumeForm } from "@/components/resume-form";
 import { ResumePreview } from "@/components/resume-preview/resume-preview";
 import { AiPanel } from "@/components/ai/ai-panel";
@@ -8,9 +8,20 @@ import { AiPanel } from "@/components/ai/ai-panel";
 export function BuilderClient() {
   const [mobileView, setMobileView] = useState<"edit" | "preview">("edit");
 
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    return () => {
+      html.style.overflow = "";
+      body.style.overflow = "";
+    };
+  }, []);
+
   return (
     <div
-      className="flex h-dvh flex-col"
+      className="flex h-dvh flex-col overflow-hidden"
       style={{
         backgroundColor: "#141415",
         backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)",

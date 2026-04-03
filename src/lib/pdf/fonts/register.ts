@@ -49,5 +49,10 @@ export function registerPDFFonts(): void {
  * See: https://github.com/diegomura/react-pdf/issues/311#issuecomment-548301604
  */
 export function registerPDFHyphenationCallback(): void {
-  Font.registerHyphenationCallback((word: string) => [word]);
+  Font.registerHyphenationCallback((word: string) => {
+    if (word.length > 30) {
+      return Array.from(word);
+    }
+    return [word];
+  });
 }

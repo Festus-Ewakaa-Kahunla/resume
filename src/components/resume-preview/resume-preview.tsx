@@ -29,7 +29,7 @@ export function ResumePreview() {
 
   return (
     <div className="relative flex h-full flex-col">
-      <section className="flex-1 overflow-auto p-4">
+      <section className="flex-1 overflow-y-auto overscroll-contain p-4">
         <div className="flex justify-center">
           <ResumeIframeCSR
             documentSize={"Letter"}
@@ -49,7 +49,7 @@ export function ResumePreview() {
         setScale={setScale}
         documentSize={"Letter"}
         document={document}
-        fileName={resume.profile.name || "Resume"}
+        fileName={resume.profile.name ? `${resume.profile.name} Resume` : "Resume"}
       />
     </div>
   );

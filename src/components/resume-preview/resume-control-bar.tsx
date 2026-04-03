@@ -48,16 +48,26 @@ function ResumeControlBar({
             setScaleOnResize(false);
             setScale(Number(e.target.value));
           }}
-          className="accent-sky-500"
+          className="accent-white"
         />
         <div className="w-10 text-xs">{`${Math.round(scale * 100)}%`}</div>
-        <label className="hidden items-center gap-1 text-xs lg:flex">
-          <input
-            type="checkbox"
-            className="mt-0.5 h-3.5 w-3.5 accent-sky-500"
-            checked={scaleOnResize}
-            onChange={() => setScaleOnResize((prev) => !prev)}
-          />
+        <label className="hidden cursor-pointer items-center gap-1.5 text-xs lg:flex">
+          <button
+            role="checkbox"
+            aria-checked={scaleOnResize}
+            onClick={() => setScaleOnResize((prev) => !prev)}
+            className={`flex h-3.5 w-3.5 items-center justify-center rounded-[3px] border transition-colors ${
+              scaleOnResize
+                ? "border-white/20 bg-white/15"
+                : "border-white/10 bg-white/[0.04]"
+            }`}
+          >
+            {scaleOnResize && (
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <path d="M2 5L4 7L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            )}
+          </button>
           <span className="select-none">Autoscale</span>
         </label>
       </div>

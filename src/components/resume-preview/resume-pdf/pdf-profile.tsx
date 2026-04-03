@@ -29,7 +29,7 @@ export const PdfProfile = ({
       <PdfText
         bold={true}
         color="#171717"
-        style={{ fontSize: "20pt", ...nameStyle }}
+        style={{ fontSize: "20pt", textAlign: "center", ...nameStyle }}
       >
         {name}
       </PdfText>

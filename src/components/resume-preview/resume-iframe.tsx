@@ -42,7 +42,7 @@ function getIframeInitialContent(isA4: boolean) {
     ${preloadLinks}
     <style>${fontFaces}</style>
   </head>
-  <body style='overflow: visible; width: ${width}pt; margin: 0; padding: 0; -webkit-text-size-adjust:none;'>
+  <body style='overflow: hidden; width: ${width}pt; margin: 0; padding: 0; -webkit-text-size-adjust:none; overflow-wrap: break-word; word-break: break-word;'>
     <div></div>
   </body>
 </html>`;
@@ -146,7 +146,7 @@ function ResumeIframe({
           className="bg-white shadow-[0_2px_8px_rgba(0,0,0,0.25)]"
         >
           <Frame
-            style={{ width: "100%", height: `${iframeHeight}px`, border: "none" }}
+            style={{ width: "100%", height: `${iframeHeight}px`, border: "none", overflow: "hidden" }}
             initialContent={iframeInitialContent}
             key={`${isA4 ? "A4" : "LETTER"}-p1`}
           >

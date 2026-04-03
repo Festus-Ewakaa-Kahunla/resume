@@ -70,6 +70,9 @@ export default function HomePage() {
             <Link href="/help" className="text-zinc-400 transition-colors hover:text-white">
               Help
             </Link>
+            <a href="https://github.com/Festus-Ewakaa-Kahunla/resume" target="_blank" rel="noreferrer" className="text-zinc-400 transition-colors hover:text-white">
+              GitHub
+            </a>
           </div>
           <span className="text-zinc-600">
             &copy; {new Date().getFullYear()} All Rights Reserved. Festus Kahunla
