@@ -36,6 +36,16 @@ Respond ONLY with valid JSON matching this exact schema:
       "descriptions": ["string array"]
     }
   ],
+  "publications": [
+    {
+      "title": "string",
+      "authors": "string",
+      "venue": "string",
+      "date": "string",
+      "url": "string",
+      "descriptions": ["string array"]
+    }
+  ],
   "skills": {
     "featuredSkills": [
       { "skill": "string", "rating": 4 }
@@ -48,13 +58,14 @@ Respond ONLY with valid JSON matching this exact schema:
 }
 
 Rules:
-1. Extract EVERY work experience, education, and project entry. Do not truncate.
+1. Extract EVERY work experience, education, project, and publication entry. Do not truncate.
 2. For featuredSkills, pick the top 6 most prominent skills. Set rating to 4 for all (user adjusts later).
 3. If a section doesn't exist in the resume, use empty arrays.
 4. Preserve the original wording of bullet points — do not rewrite them.
 5. For dates, keep the original format (e.g., "Jan 2022 - Present").
 6. If you find a summary/objective section, put it in profile.summary.
-7. Put any sections that don't fit standard categories into custom.descriptions.`;
+7. For publications: title is the paper title, authors is the author list, venue is the journal/conference name, url is the DOI or paper link.
+8. Put any sections that don't fit standard categories into custom.descriptions.`;
 
 export function buildParseResumeUserPrompt(rawText: string): string {
   return `Parse the following resume text and extract all structured data:\n\n${rawText}`;

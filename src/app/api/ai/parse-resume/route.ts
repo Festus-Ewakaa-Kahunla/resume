@@ -5,16 +5,30 @@ import {
   buildParseResumeUserPrompt,
 } from "@/lib/ai/prompts/parse-resume";
 import { parseJsonResponse } from "@/lib/ai/response-parsers";
-import type { AiProviderName } from "@/lib/ai/types";
+import type { AiImageInput, AiProviderName } from "@/lib/ai/types";
 import type { Resume } from "@/types/resume";
+
+const VISION_INSTRUCTION =
+  "Read the attached resume image and extract all structured data exactly as specified.";
 
 export async function POST(request: Request) {
   try {
-    const { rawText, provider: preferredProvider, apiKeys } = await request.json();
+    const {
+      rawText,
+      image,
+      provider: preferredProvider,
+      apiKeys,
+    } = await request.json();
 
-    if (!rawText || typeof rawText !== "string") {
+    const hasText = typeof rawText === "string" && rawText.trim().length > 0;
+    const hasImage =
+      image &&
+      typeof image.base64 === "string" &&
+      typeof image.mimeType === "string";
+
+    if (!hasText && !hasImage) {
       return NextResponse.json(
-        { error: "rawText is required" },
+        { error: "rawText or image is required" },
         { status: 400 }
       );
     }
@@ -24,13 +38,26 @@ export async function POST(request: Request) {
       apiKeys ?? {}
     );
 
+    const userPrompt = hasText
+      ? buildParseResumeUserPrompt(rawText)
+      : VISION_INSTRUCTION;
+
+    const imageInput: AiImageInput | undefined = hasImage
+      ? { mimeType: image.mimeType, base64: image.base64 }
+      : undefined;
+
     const response = await provider.complete(
       "parse-resume",
       PARSE_RESUME_SYSTEM_PROMPT,
-      buildParseResumeUserPrompt(rawText)
+      userPrompt,
+      imageInput
     );
 
     const resume = parseJsonResponse<Resume>(response.text, provider.name);
+
+    if (!Array.isArray(resume.publications)) {
+      resume.publications = [];
+    }
 
     return NextResponse.json({
       resume,

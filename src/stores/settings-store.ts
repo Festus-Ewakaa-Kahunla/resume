@@ -108,7 +108,7 @@ export const useSettingsStore = create<SettingsStore>()(
       name: "resume-settings",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ settings: state.settings }),
-      version: 1,
+      version: 2,
     }
   )
 );

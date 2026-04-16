@@ -7,6 +7,7 @@ import type {
   ResumeWorkExperience,
   ResumeEducation,
   ResumeProject,
+  ResumePublication,
   FeaturedSkill,
 } from "@/types/resume";
 import type { ShowForm } from "@/types/settings";
@@ -41,6 +42,15 @@ export const initialProject: ResumeProject = {
   descriptions: [],
 };
 
+export const initialPublication: ResumePublication = {
+  title: "",
+  authors: "",
+  venue: "",
+  date: "",
+  url: "",
+  descriptions: [],
+};
+
 export const initialFeaturedSkill: FeaturedSkill = { skill: "", rating: 4 };
 
 export const initialResumeState: Resume = {
@@ -48,6 +58,7 @@ export const initialResumeState: Resume = {
   workExperiences: [structuredClone(initialWorkExperience)],
   educations: [structuredClone(initialEducation)],
   projects: [structuredClone(initialProject)],
+  publications: [structuredClone(initialPublication)],
   skills: {
     featuredSkills: Array.from({ length: 6 }, () => ({ ...initialFeaturedSkill })),
     descriptions: [],
@@ -69,6 +80,7 @@ interface ResumeStore {
   changeWorkExperiences: (payload: SectionChangePayload<ResumeWorkExperience>) => void;
   changeEducations: (payload: SectionChangePayload<ResumeEducation>) => void;
   changeProjects: (payload: SectionChangePayload<ResumeProject>) => void;
+  changePublications: (payload: SectionChangePayload<ResumePublication>) => void;
   changeSkills: (
     payload:
       | { field: "descriptions"; value: string[] }
@@ -124,6 +136,17 @@ export const useResumeStore = create<ResumeStore>()(
           }
         }),
 
+      changePublications: ({ idx, field, value }) =>
+        set((state) => {
+          const item = state.resume.publications[idx];
+          if (field === "descriptions") {
+            item.descriptions = value as string[];
+          } else {
+            (item[field as Exclude<keyof ResumePublication, "descriptions">] as string) =
+              value as string;
+          }
+        }),
+
       changeSkills: (payload) =>
         set((state) => {
           if (payload.field === "descriptions") {
@@ -150,6 +173,9 @@ export const useResumeStore = create<ResumeStore>()(
               break;
             case "projects":
               state.resume.projects.push(structuredClone(initialProject));
+              break;
+            case "publications":
+              state.resume.publications.push(structuredClone(initialPublication));
               break;
           }
         }),
@@ -185,7 +211,15 @@ export const useResumeStore = create<ResumeStore>()(
       name: "resume-data",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ resume: state.resume }),
-      version: 1,
+      version: 2,
+      migrate: (persistedState, version) => {
+        const state = persistedState as { resume?: Partial<Resume> } | undefined;
+        if (!state?.resume) return persistedState;
+        if (version < 2 && !state.resume.publications) {
+          state.resume.publications = [structuredClone(initialPublication)];
+        }
+        return state;
+      },
     }
   )
 );

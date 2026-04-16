@@ -1,5 +1,6 @@
 import type {
   AiFeature,
+  AiImageInput,
   AiProviderRawResponse,
   StreamChunk,
 } from "@/lib/ai/types";
@@ -20,11 +21,26 @@ export class AnthropicProvider extends BaseAiProvider {
   protected async executeComplete(
     feature: AiFeature,
     systemPrompt: string,
-    userPrompt: string
+    userPrompt: string,
+    image?: AiImageInput
   ): Promise<AiProviderRawResponse> {
     const modelConfig = this.getModelConfig(feature);
     const apiKey = this.getApiKey();
     const { controller, clearTimeout } = this.createAbortController();
+
+    const userContent = image
+      ? [
+          {
+            type: "image" as const,
+            source: {
+              type: "base64" as const,
+              media_type: image.mimeType,
+              data: image.base64,
+            },
+          },
+          { type: "text" as const, text: userPrompt },
+        ]
+      : userPrompt;
 
     try {
     const response = await fetch(
@@ -39,7 +55,7 @@ export class AnthropicProvider extends BaseAiProvider {
         body: JSON.stringify({
           model: modelConfig.modelId,
           system: systemPrompt,
-          messages: [{ role: "user", content: userPrompt }],
+          messages: [{ role: "user", content: userContent }],
           max_tokens: modelConfig.maxOutputTokens,
         }),
         signal: controller.signal,

@@ -14,6 +14,7 @@ export const PdfEducation = ({
   showBulletPoints,
   headingStyle,
   subtitleStyle,
+  detailStyle,
   bodyStyle,
   dateStyle,
 }: {
@@ -22,6 +23,7 @@ export const PdfEducation = ({
   showBulletPoints: boolean;
   headingStyle?: Style;
   subtitleStyle?: Style;
+  detailStyle?: Style;
   bodyStyle?: Style;
   dateStyle?: Style;
 }) => {
@@ -52,7 +54,7 @@ export const PdfEducation = ({
                     : spacing["1.5"],
                 }}
               >
-                <PdfText italic={true} style={bodyStyle}>
+                <PdfText italic={true} style={detailStyle ?? bodyStyle}>
                   {degreeText}
                 </PdfText>
                 <PdfText style={dateStyle}>{date}</PdfText>

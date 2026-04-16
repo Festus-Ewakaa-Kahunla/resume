@@ -83,6 +83,26 @@ export function ParsedResumePreview({ resume }: ParsedResumePreviewProps) {
         </Section>
       )}
 
+      {resume.publications && resume.publications.length > 0 && (
+        <Section title="Publications">
+          {resume.publications
+            .filter((pub) => pub.title || pub.authors)
+            .map((pub, i) => (
+              <div key={i} className="mb-3 last:mb-0">
+                <p className="text-sm text-white">{pub.title}</p>
+                {(pub.authors || pub.venue) && (
+                  <p className="text-xs text-zinc-400">
+                    {[pub.authors, pub.venue].filter(Boolean).join(" — ")}
+                  </p>
+                )}
+                {pub.date && (
+                  <p className="text-xs text-zinc-600">{pub.date}</p>
+                )}
+              </div>
+            ))}
+        </Section>
+      )}
+
       {resume.skills.descriptions.length > 0 && (
         <Section title="Skills">
           {resume.skills.descriptions.map((desc, i) => (

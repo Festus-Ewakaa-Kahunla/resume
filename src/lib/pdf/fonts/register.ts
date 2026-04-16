@@ -35,6 +35,20 @@ export function registerPDFFonts(): void {
           fontStyle: "italic",
         }
       );
+    } else {
+      // Fallback: register Regular/Bold as italic variants too so @react-pdf
+      // doesn't crash when text is styled italic. Text renders upright.
+      fonts.push(
+        {
+          src: `/fonts/${fontFamily}-Regular.ttf`,
+          fontStyle: "italic",
+        },
+        {
+          src: `/fonts/${fontFamily}-Bold.ttf`,
+          fontWeight: "bold",
+          fontStyle: "italic",
+        }
+      );
     }
 
     Font.register({ family: fontFamily, fonts });

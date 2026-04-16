@@ -1,5 +1,6 @@
 import type {
   AiFeature,
+  AiImageInput,
   AiModelConfig,
   AiProvider,
   AiProviderConfig,
@@ -48,13 +49,14 @@ export abstract class BaseAiProvider implements AiProvider {
   async complete(
     feature: AiFeature,
     systemPrompt: string,
-    userPrompt: string
+    userPrompt: string,
+    image?: AiImageInput
   ): Promise<AiProviderRawResponse> {
     let lastError: AiError | undefined;
 
     for (let attempt = 0; attempt <= this.config.maxRetries; attempt++) {
       try {
-        return await this.executeComplete(feature, systemPrompt, userPrompt);
+        return await this.executeComplete(feature, systemPrompt, userPrompt, image);
       } catch (error) {
         if (error instanceof AiAuthenticationError) {
           throw error;
@@ -102,7 +104,8 @@ export abstract class BaseAiProvider implements AiProvider {
   protected abstract executeComplete(
     feature: AiFeature,
     systemPrompt: string,
-    userPrompt: string
+    userPrompt: string,
+    image?: AiImageInput
   ): Promise<AiProviderRawResponse>;
 
   protected abstract executeStream(

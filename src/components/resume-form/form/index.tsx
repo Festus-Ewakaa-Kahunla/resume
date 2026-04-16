@@ -8,8 +8,7 @@ import {
 } from "@/components/resume-form/form/icon-button";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useResumeStore } from "@/stores/resume-store";
-import type { ShowForm, TypographyElement } from "@/types/settings";
-import { FontToolbar } from "@/components/resume-form/form/font-toolbar";
+import type { ShowForm } from "@/types/settings";
 import { PlusSmallIcon } from "@heroicons/react/24/outline";
 
 export const BaseForm = ({
@@ -25,14 +24,6 @@ export const BaseForm = ({
     {children}
   </section>
 );
-
-const FORM_TO_TYPO_ELEMENT: Record<ShowForm, TypographyElement> = {
-  workExperiences: "subtitle",
-  educations: "subtitle",
-  projects: "subtitle",
-  skills: "body",
-  custom: "body",
-};
 
 export const Form = ({
   form,
@@ -87,7 +78,6 @@ export const Form = ({
           onChange={(e) => setHeading(e.target.value)}
         />
         <div className="flex items-center gap-0.5">
-          <FontToolbar element={FORM_TO_TYPO_ELEMENT[form]} />
           {!isFirstForm && (
             <MoveIconButton type="up" onClick={handleMoveClick} />
           )}

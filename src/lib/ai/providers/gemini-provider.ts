@@ -1,5 +1,6 @@
 import type {
   AiFeature,
+  AiImageInput,
   AiProviderRawResponse,
   StreamChunk,
 } from "@/lib/ai/types";
@@ -20,7 +21,8 @@ export class GeminiProvider extends BaseAiProvider {
   protected async executeComplete(
     feature: AiFeature,
     systemPrompt: string,
-    userPrompt: string
+    userPrompt: string,
+    image?: AiImageInput
   ): Promise<AiProviderRawResponse> {
     const modelConfig = this.getModelConfig(feature);
     const apiKey = this.getApiKey();
@@ -28,6 +30,16 @@ export class GeminiProvider extends BaseAiProvider {
 
     try {
     const url = `${this.config.baseUrl}/models/${modelConfig.modelId}:generateContent`;
+
+    const userParts: Array<
+      { text: string } | { inlineData: { mimeType: string; data: string } }
+    > = [{ text: userPrompt }];
+
+    if (image) {
+      userParts.push({
+        inlineData: { mimeType: image.mimeType, data: image.base64 },
+      });
+    }
 
     const response = await fetch(url, {
       method: "POST",
@@ -41,7 +53,7 @@ export class GeminiProvider extends BaseAiProvider {
         },
         contents: [
           {
-            parts: [{ text: userPrompt }],
+            parts: userParts,
           },
         ],
         generationConfig: {

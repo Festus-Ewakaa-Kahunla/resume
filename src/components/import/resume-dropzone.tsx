@@ -2,11 +2,17 @@
 
 import { useState, useCallback } from "react";
 import { useApiKeysStore } from "@/stores/api-keys-store";
+import {
+  extractResumeInput,
+  isSupportedResumeFile,
+} from "@/lib/extract-resume-input";
 import type { Resume } from "@/types/resume";
 
 interface ResumeDropzoneProps {
   onParsed: (resume: Resume, fileName: string) => void;
 }
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 export function ResumeDropzone({ onParsed }: ResumeDropzoneProps) {
   const [dragActive, setDragActive] = useState(false);
@@ -16,62 +22,47 @@ export function ResumeDropzone({ onParsed }: ResumeDropzoneProps) {
 
   const handleFile = useCallback(
     async (file: File) => {
-      if (file.type !== "application/pdf") {
-        setError("Please upload a PDF file");
+      if (!isSupportedResumeFile(file)) {
+        setError("Please upload a PDF or image (PNG/JPG)");
         return;
       }
 
-      if (file.size > 10 * 1024 * 1024) {
+      if (file.size > MAX_FILE_SIZE) {
         setError("File must be under 10MB");
         return;
       }
 
       setError(null);
       setParsing(true);
-      setStatus("Extracting text from PDF...");
+      setStatus("Reading your resume...");
 
       try {
-        // Step 1: Extract raw text client-side with pdfjs
-        const pdfjs = await import("pdfjs-dist");
-        if (typeof window !== "undefined") {
-          pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-        }
+        const input = await extractResumeInput(file);
 
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
-        let rawText = "";
-
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const content = await page.getTextContent();
-          const pageText = content.items
-            .map((item) => ("str" in item ? item.str : ""))
-            .join(" ");
-          rawText += pageText + "\n";
-        }
-
-        if (!rawText.trim()) {
-          setError("Could not extract text from this PDF. It may be image-based.");
-          setParsing(false);
-          return;
-        }
-
-        // Step 2: Send to AI for structured extraction
-        setStatus("AI is parsing your resume...");
+        setStatus(
+          input.kind === "image"
+            ? "AI is reading your resume image..."
+            : "AI is parsing your resume..."
+        );
 
         const { apiKeys, activeProvider } = useApiKeysStore.getState();
         const filteredKeys = Object.fromEntries(
           Object.entries(apiKeys).filter(([, v]) => v && v.trim().length > 0)
         );
 
+        const body =
+          input.kind === "text"
+            ? { rawText: input.text, provider: activeProvider, apiKeys: filteredKeys }
+            : {
+                image: { mimeType: input.mimeType, base64: input.base64 },
+                provider: activeProvider,
+                apiKeys: filteredKeys,
+              };
+
         const response = await fetch("/api/ai/parse-resume", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            rawText,
-            provider: activeProvider,
-            apiKeys: filteredKeys,
-          }),
+          body: JSON.stringify(body),
         });
 
         if (!response.ok) {
@@ -83,7 +74,7 @@ export function ResumeDropzone({ onParsed }: ResumeDropzoneProps) {
         onParsed(resume, file.name);
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : "Failed to parse PDF";
+          err instanceof Error ? err.message : "Failed to parse file";
         setError(message);
       } finally {
         setParsing(false);
@@ -128,18 +119,18 @@ export function ResumeDropzone({ onParsed }: ResumeDropzoneProps) {
         <>
           <UploadIcon />
           <p className="mt-4 text-sm text-zinc-400">
-            Drag and drop your PDF resume here, or
+            Drag and drop your resume here, or
           </p>
           <label className="mt-3 cursor-pointer rounded-lg bg-white px-6 py-2 text-sm font-medium text-black transition-colors hover:bg-zinc-200">
             Browse Files
             <input
               type="file"
-              accept=".pdf"
+              accept=".pdf,.png,.jpg,.jpeg,.webp,application/pdf,image/png,image/jpeg,image/webp"
               onChange={handleChange}
               className="hidden"
             />
           </label>
-          <p className="mt-3 text-xs text-zinc-600">PDF only, max 10MB</p>
+          <p className="mt-3 text-xs text-zinc-600">PDF or image, max 10MB</p>
         </>
       )}
 

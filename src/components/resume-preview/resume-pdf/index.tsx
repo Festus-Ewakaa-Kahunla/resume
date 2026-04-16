@@ -5,6 +5,7 @@ import { PdfProfile } from "@/components/resume-preview/resume-pdf/pdf-profile";
 import { PdfWorkExperience } from "@/components/resume-preview/resume-pdf/pdf-work-experience";
 import { PdfEducation } from "@/components/resume-preview/resume-pdf/pdf-education";
 import { PdfProject } from "@/components/resume-preview/resume-pdf/pdf-project";
+import { PdfPublications } from "@/components/resume-preview/resume-pdf/pdf-publications";
 import { PdfSkills } from "@/components/resume-preview/resume-pdf/pdf-skills";
 import { PdfCustom } from "@/components/resume-preview/resume-pdf/pdf-custom";
 import { SuppressPdfWarnings } from "@/components/resume-preview/resume-pdf/common/suppress-pdf-warnings";
@@ -36,16 +37,29 @@ export const PdfDocument = ({
   settings,
   isPDF = false,
 }: PdfDocumentProps) => {
-  const { profile, workExperiences, educations, projects, skills, custom } =
-    resume;
+  const {
+    profile,
+    workExperiences,
+    educations,
+    projects,
+    publications,
+    skills,
+    custom,
+  } = resume;
   const { name } = profile;
   const { formToHeading, formToShow, formsOrder, showBulletPoints } = settings;
 
   const nameTypo = resolveTypography(settings, "name");
   const headingTypo = resolveTypography(settings, "sectionHeading");
   const subtitleTypo = resolveTypography(settings, "subtitle");
+  const detailTypo = resolveTypography(settings, "detail");
   const bodyTypo = resolveTypography(settings, "body");
   const dateTypo = resolveTypography(settings, "date");
+
+  const detailStyle = {
+    fontSize: detailTypo.fontSize + "pt",
+    fontFamily: detailTypo.fontFamily,
+  };
 
   const showFormsOrder = formsOrder.filter((form) => formToShow[form]);
 
@@ -55,6 +69,7 @@ export const PdfDocument = ({
         heading={formToHeading["workExperiences"]}
         headingStyle={{ fontSize: headingTypo.fontSize + "pt", fontFamily: headingTypo.fontFamily }}
         subtitleStyle={{ fontSize: subtitleTypo.fontSize + "pt", fontWeight: subtitleTypo.fontWeight, fontFamily: subtitleTypo.fontFamily }}
+        detailStyle={detailStyle}
         bodyStyle={{ fontSize: bodyTypo.fontSize + "pt", fontFamily: bodyTypo.fontFamily }}
         dateStyle={{ fontSize: dateTypo.fontSize + "pt", fontFamily: dateTypo.fontFamily }}
         workExperiences={workExperiences}
@@ -65,6 +80,7 @@ export const PdfDocument = ({
         heading={formToHeading["educations"]}
         headingStyle={{ fontSize: headingTypo.fontSize + "pt", fontFamily: headingTypo.fontFamily }}
         subtitleStyle={{ fontSize: subtitleTypo.fontSize + "pt", fontWeight: subtitleTypo.fontWeight, fontFamily: subtitleTypo.fontFamily }}
+        detailStyle={detailStyle}
         bodyStyle={{ fontSize: bodyTypo.fontSize + "pt", fontFamily: bodyTypo.fontFamily }}
         dateStyle={{ fontSize: dateTypo.fontSize + "pt", fontFamily: dateTypo.fontFamily }}
         educations={educations}
@@ -79,6 +95,18 @@ export const PdfDocument = ({
         bodyStyle={{ fontSize: bodyTypo.fontSize + "pt", fontFamily: bodyTypo.fontFamily }}
         dateStyle={{ fontSize: dateTypo.fontSize + "pt", fontFamily: dateTypo.fontFamily }}
         projects={projects}
+      />
+    ),
+    publications: () => (
+      <PdfPublications
+        heading={formToHeading["publications"]}
+        headingStyle={{ fontSize: headingTypo.fontSize + "pt", fontFamily: headingTypo.fontFamily }}
+        subtitleStyle={{ fontSize: subtitleTypo.fontSize + "pt", fontWeight: subtitleTypo.fontWeight, fontFamily: subtitleTypo.fontFamily }}
+        bodyStyle={{ fontSize: bodyTypo.fontSize + "pt", fontFamily: bodyTypo.fontFamily }}
+        dateStyle={{ fontSize: dateTypo.fontSize + "pt", fontFamily: dateTypo.fontFamily }}
+        publications={publications}
+        isPDF={isPDF}
+        showBulletPoints={showBulletPoints["publications"]}
       />
     ),
     skills: () => (
@@ -127,6 +155,8 @@ export const PdfDocument = ({
                 fontWeight: nameTypo.fontWeight,
                 fontFamily: nameTypo.fontFamily,
               }}
+              bodyFontSize={Number(bodyTypo.fontSize)}
+              bodyFontFamily={bodyTypo.fontFamily}
             />
             {showFormsOrder.map((form) => {
               const Component = formTypeToComponent[form];

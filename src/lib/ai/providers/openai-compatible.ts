@@ -1,5 +1,6 @@
 import type {
   AiFeature,
+  AiImageInput,
   AiProviderRawResponse,
   StreamChunk,
 } from "@/lib/ai/types";
@@ -12,14 +13,42 @@ import {
 import { BaseAiProvider } from "./base-provider";
 
 export abstract class OpenAiCompatibleProvider extends BaseAiProvider {
+  /** Whether this provider's models can accept image input. */
+  protected supportsVision(): boolean {
+    return false;
+  }
+
   protected async executeComplete(
     feature: AiFeature,
     systemPrompt: string,
-    userPrompt: string
+    userPrompt: string,
+    image?: AiImageInput
   ): Promise<AiProviderRawResponse> {
     const modelConfig = this.getModelConfig(feature);
     const apiKey = this.getApiKey();
     const { controller, clearTimeout } = this.createAbortController();
+
+    if (image && !this.supportsVision()) {
+      throw new AiError(
+        `${this.displayName} does not support image input. Switch to Gemini, Claude, or GPT-4o for vision.`,
+        this.name,
+        undefined,
+        false
+      );
+    }
+
+    const userMessageContent =
+      image && this.supportsVision()
+        ? [
+            {
+              type: "image_url" as const,
+              image_url: {
+                url: `data:${image.mimeType};base64,${image.base64}`,
+              },
+            },
+            { type: "text" as const, text: userPrompt },
+          ]
+        : userPrompt;
 
     try {
     const response = await fetch(
@@ -34,7 +63,7 @@ export abstract class OpenAiCompatibleProvider extends BaseAiProvider {
           model: modelConfig.modelId,
           messages: [
             { role: "system", content: systemPrompt },
-            { role: "user", content: userPrompt },
+            { role: "user", content: userMessageContent },
           ],
           max_tokens: modelConfig.maxOutputTokens,
           temperature: 0.7,

@@ -2,6 +2,7 @@ export type ShowForm =
   | "workExperiences"
   | "educations"
   | "projects"
+  | "publications"
   | "skills"
   | "custom";
 
@@ -11,6 +12,7 @@ export type TypographyElement =
   | "name"
   | "sectionHeading"
   | "subtitle"
+  | "detail"
   | "body"
   | "date";
 
@@ -37,9 +39,10 @@ export const initialSettings: ResumeSettings = {
   fontFamily: DEFAULT_FONT_FAMILY,
   fontSize: DEFAULT_FONT_SIZE,
   typography: {
-    name: { fontSize: "16", fontWeight: "bold" },
-    sectionHeading: { fontSize: "11", fontWeight: "bold" },
-    subtitle: { fontSize: "10.5", fontWeight: "bold" },
+    name: { fontSize: "22", fontWeight: "bold" },
+    sectionHeading: { fontSize: "12", fontWeight: "bold" },
+    subtitle: { fontSize: "11", fontWeight: "bold" },
+    detail: { fontSize: "10.5" },
     body: { fontSize: "10.5" },
     date: { fontSize: "10" },
   },
@@ -47,20 +50,30 @@ export const initialSettings: ResumeSettings = {
     workExperiences: true,
     educations: true,
     projects: true,
+    publications: false,
     skills: true,
     custom: false,
   },
   formToHeading: {
-    workExperiences: "WORK EXPERIENCE",
+    workExperiences: "EXPERIENCE",
     educations: "EDUCATION",
-    projects: "PROJECT",
+    projects: "PROJECTS",
+    publications: "PUBLICATIONS",
     skills: "SKILLS",
-    custom: "CUSTOM SECTION",
+    custom: "LEADERSHIP & ACTIVITIES",
   },
-  formsOrder: ["workExperiences", "educations", "projects", "skills", "custom"],
+  formsOrder: [
+    "educations",
+    "skills",
+    "workExperiences",
+    "projects",
+    "publications",
+    "custom",
+  ],
   showBulletPoints: {
     educations: true,
     projects: true,
+    publications: true,
     skills: true,
     custom: true,
   },

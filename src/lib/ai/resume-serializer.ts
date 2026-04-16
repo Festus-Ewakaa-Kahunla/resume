@@ -40,6 +40,18 @@ export function serializeResumeForPrompt(resume: Resume): string {
     sections.push(`## PROJECTS\n${items.join("\n\n")}`);
   }
 
+  if (resume.publications && resume.publications.length > 0) {
+    const items = resume.publications
+      .filter((pub) => pub.title || pub.authors || pub.venue)
+      .map((pub) => {
+        const bullets = pub.descriptions.map((d) => `  - ${d}`).join("\n");
+        return `Title: ${pub.title}\nAuthors: ${pub.authors}\nVenue: ${pub.venue}\nDate: ${pub.date}\nURL: ${pub.url}\n${bullets}`;
+      });
+    if (items.length > 0) {
+      sections.push(`## PUBLICATIONS\n${items.join("\n\n")}`);
+    }
+  }
+
   if (
     resume.skills.featuredSkills.some((s) => s.skill) ||
     resume.skills.descriptions.length > 0

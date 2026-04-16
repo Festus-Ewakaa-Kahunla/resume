@@ -13,6 +13,7 @@ export const PdfWorkExperience = ({
   workExperiences,
   headingStyle,
   subtitleStyle,
+  detailStyle,
   bodyStyle,
   dateStyle,
 }: {
@@ -20,6 +21,7 @@ export const PdfWorkExperience = ({
   workExperiences: ResumeWorkExperience[];
   headingStyle?: Style;
   subtitleStyle?: Style;
+  detailStyle?: Style;
   bodyStyle?: Style;
   dateStyle?: Style;
 }) => {
@@ -44,7 +46,7 @@ export const PdfWorkExperience = ({
                   : spacing["1.5"],
               }}
             >
-              <PdfText italic={true} style={bodyStyle}>
+              <PdfText italic={true} style={detailStyle ?? bodyStyle}>
                 {jobTitle}
               </PdfText>
               <PdfText style={dateStyle}>{date}</PdfText>

@@ -45,6 +45,11 @@ export interface StreamChunk {
   error?: string;
 }
 
+export interface AiImageInput {
+  mimeType: string;
+  base64: string;
+}
+
 export interface AiProvider {
   readonly name: AiProviderName;
   readonly displayName: string;
@@ -52,7 +57,8 @@ export interface AiProvider {
   complete(
     feature: AiFeature,
     systemPrompt: string,
-    userPrompt: string
+    userPrompt: string,
+    image?: AiImageInput
   ): Promise<AiProviderRawResponse>;
   stream(
     feature: AiFeature,

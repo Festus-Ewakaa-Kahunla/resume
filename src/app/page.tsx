@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Header } from "@/components/layout/header";
+import { ApiKeysPopover } from "@/components/settings/api-keys-popover";
 
 const FEATURES = [
   {
@@ -19,7 +19,9 @@ const FEATURES = [
 export default function HomePage() {
   return (
     <div className="flex min-h-dvh flex-col bg-[#0a0a0a]" style={{ fontFamily: "var(--font-sreda), sans-serif" }}>
-      <Header />
+      <div className="absolute right-4 top-4 z-10">
+        <ApiKeysPopover />
+      </div>
 
       <main className="flex-1 flex items-center">
         <section className="mx-auto max-w-4xl px-4 py-8 text-center sm:py-24">

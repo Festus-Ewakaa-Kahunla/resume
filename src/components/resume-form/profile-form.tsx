@@ -1,9 +1,7 @@
 "use client";
 
-import { useCallback } from "react";
 import { BaseForm } from "@/components/resume-form/form";
 import { FormInput } from "@/components/resume-form/form/input-group";
-import { AiWriteButton } from "@/components/resume-form/form/ai-write-button";
 import { useResumeStore } from "@/stores/resume-store";
 import { formatLocation } from "@/lib/format-location";
 import type { ResumeProfile } from "@/types/resume";
@@ -11,19 +9,11 @@ import type { ResumeProfile } from "@/types/resume";
 export const ProfileForm = () => {
   const profile = useResumeStore((state) => state.resume.profile);
   const changeProfile = useResumeStore((state) => state.changeProfile);
-  const { name, email, phone, url, summary, location } = profile;
+  const { name, email, phone, url, location } = profile;
 
   const handleProfileChange = (field: keyof ResumeProfile, value: string) => {
     changeProfile(field, value);
   };
-
-  const handleAiSummary = useCallback(
-    (content: string | string[]) => {
-      const text = Array.isArray(content) ? content.join(" ") : content;
-      changeProfile("summary", text);
-    },
-    [changeProfile]
-  );
 
   return (
     <BaseForm>
@@ -36,23 +26,6 @@ export const ProfileForm = () => {
           value={name}
           onChange={handleProfileChange}
         />
-        <div className="col-span-full">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] text-zinc-500">Objective</span>
-            <AiWriteButton
-              target={{ section: "profile", field: "summary" }}
-              onGenerated={handleAiSummary}
-            />
-          </div>
-          <textarea
-            name="summary"
-            className="mt-1 block w-full resize-none overflow-hidden rounded-md border-0 bg-white/[0.04] px-3 py-2 text-[13px] text-white outline-none placeholder:text-zinc-600 transition-colors focus:bg-white/[0.07] focus:ring-1 focus:ring-zinc-700"
-            placeholder="Entrepreneur and educator obsessed with making education free for anyone"
-            value={summary ?? ""}
-            onChange={(e) => handleProfileChange("summary", e.target.value)}
-            rows={3}
-          />
-        </div>
         <FormInput
           label="Email"
           labelClassName="col-span-4"
